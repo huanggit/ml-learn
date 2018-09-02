@@ -9,6 +9,8 @@ def add_ones(x):
 class LinearModel:
     '''y_predict = a * x + b'''
 
+    good_enough_loss = 0.01
+
     def __init__(self, a=10.0, b=-20.0):
         self.losses = list()
         self.weight_init(a, b)
@@ -37,5 +39,8 @@ class LinearModel:
             for i in range(steps_in_a_epoch):
                 x_batch, y_batch = dataset.batch(batch_size)
                 self.w -= self.optimizer.update_w(self._delta(x_batch, y_batch))
-                self.losses.append(self._loss(x, y))
+            loss = self._loss(x, y)
+            self.losses.append(loss)
+            if loss < self.good_enough_loss:
+                break
         return self
