@@ -62,7 +62,6 @@ class Adam(BaseOptimizer):
         self.v = self.beta2 * self.v + (1 - self.beta2) * (delta ** 2)
         mb = self.m / (1 - self.beta1**self.t)
         vb = self.v / (1 - self.beta2**self.t)
-        print('{}'.format(self.learning_rate * mb / np.sqrt(vb + self.epsilon) / delta))
         return self.learning_rate * mb / np.sqrt(vb + self.epsilon)
 
 
