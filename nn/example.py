@@ -1,10 +1,17 @@
 # encoding=utf8
 import numpy as np
 import matplotlib.pyplot as plot
-from dataset import linear_dataset, model_sampling
-from model import LinearModel
+from dataset import linear_dataset
+from model import Layer
 from optimizer import *
-from loss import MSE
+from loss import *
+
+
+def model_sampling(model, start=0, end=1.1, interval=0.1):
+    'to plot the model fit line, we need to sample some points in model'
+    x_ = np.arange(start, end, interval)
+    y_, Z, A_prev = model.forward(x_.reshape(1, -1))
+    return x_, np.squeeze(y_)
 
 
 def init_plot():
@@ -32,8 +39,9 @@ def plot_model(data, model, inx):
 if __name__ == '__main__':
     init_plot()
     dataset = linear_dataset()
-    for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
-        model = LinearModel() \
+    for inx, optimizer in enumerate([SGD()]):
+        # for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
+        model = Layer(1, 1) \
             .compile(loss_func=MSE(), optimizer=optimizer) \
             .fit(dataset, epoch=100)
         plot_model(dataset, model, inx)

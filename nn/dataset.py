@@ -1,5 +1,6 @@
 # encoding=utf8
 import numpy as np
+from sklearn.datasets import fetch_mldata
 import random
 
 
@@ -31,14 +32,17 @@ class Dataset:
         return self.x[:batch_size], self.y[:batch_size]
 
 
-def model_sampling(model):
-    'to plot the model fit line, we need to sample some points in model'
-    x_ = np.arange(0, 1.1, 0.1)
-    y_ = model.predict(x_)
-    return x_, y_
-
-
 def linear_dataset():
     x = [30	, 35, 37,	59,	70,	76,	88,	100]
     y = [1100,	1423,	1377,	1800,	2304,	2588,	3495,	4839]
     return Dataset(x, y)
+
+
+def mnist_dataset():
+    mnist = fetch_mldata('MNIST original')
+    X, Y = mnist["data"], mnist["target"]
+    train_num = 60000
+    shuffle_index = random.permutation(train_num)
+    X_train, Y_train = X[shuffle_index] / 255, Y[shuffle_index]
+    X_test, Y_test = X[:train_num] / 255, Y[:train_num]
+    return X_train, Y_train, X_test, Y_test
