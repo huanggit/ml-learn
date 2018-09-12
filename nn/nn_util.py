@@ -15,11 +15,11 @@ def _tanh(z):
 
 
 def _relu(z):
-    return max(0, z)
+    return np.maximum(0, z)
 
 
 def _leaky_relu(z):
-    return max(0.01 * z, z)
+    return np.maximum(0.01 * z, z)
 
 
 def activate(activation, Z):

@@ -1,6 +1,7 @@
 # encoding=utf8
 import numpy as np
 from numpy import random
+from copy import deepcopy
 from nn_util import *
 
 
@@ -31,7 +32,9 @@ class Layer:
         A = activate(self.activation, Z)
         # A.shape == (n_hidden, n_batch_size)
         assert (A.shape == (self.w.shape[0], A_prev.shape[1]))
-        return A, Z, A_prev
+        self.Z = Z
+        self.A_prev = A_prev
+        return A
 
     def linear_backward(self, dZ, A_prev):
         '''
@@ -52,13 +55,15 @@ class Layer:
         assert (db.shape == self.b.shape)
         return dA_prev, dW, db
 
-    def backward(self, dA, Z, A_prev):
-        dZ = activate_derivative(self.activation, Z) * dA
-        dA_prev, dW, db = self.linear_backward(dZ, A_prev)
+    def backward(self, dA):
+        dZ = activate_derivative(self.activation, self.Z) * dA
+        dA_prev, dW, db = self.linear_backward(dZ, self.A_prev)
         return dA_prev, dW, db
 
     def compile(self, optimizer):
-        self.optimizer = optimizer
+        opz = deepcopy(optimizer)
+        opz.init_shape(self.n_features, self.n_hidden)
+        self.optimizer = opz
 
     def update_params(self, dW, db):
         update_w = self.optimizer.update_w(np.hstack([dW, db]))

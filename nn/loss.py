@@ -2,6 +2,10 @@
 import numpy as np
 
 
+def nzero(arr):
+    return np.maximum(arr, 0.000001)
+
+
 class LOSS_FUNC:
 
     def loss_value(self, y_true, y_predict):
@@ -29,11 +33,12 @@ class CROSS_ENTROPY(LOSS_FUNC):
 
     def loss_value(self, y_true, y_predict):
         size = y_true.shape[1]
-        cost = -1 * np.sum(np.multiply(y_true, np.log(y_predict))
-                           + np.multiply(1 - y_true, np.log(1 - y_predict))) / size
+        a = np.multiply(y_true, np.log(nzero(y_predict)))
+        b = np.multiply(1 - y_true, np.log(nzero(1 - y_predict)))
+        cost = -1 * np.sum(a + b) / size
         return np.squeeze(cost)
 
     def derivative(self, y_true, y_predict):
-        a = np.divide(1 - y_true, 1 - np.maximum(y_predict, 0.999999))
-        b = np.divide(y_true, np.minimum(y_predict, 0.000001))
+        a = np.divide(1 - y_true, nzero(1 - y_predict))
+        b = np.divide(y_true, nzero(y_predict))
         return a - b

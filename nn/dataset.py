@@ -34,5 +34,5 @@ def mnist_dataset(train_num):
     mnist = fetch_mldata('MNIST original')
     X, Y = shuffle(mnist["data"], mnist["target"], random_state=0)
     X_train, Y_train = X[:train_num] / 255, Y[:train_num]
-    X_test, Y_test = X[train_num:] / 255, Y[train_num:]
+    X_test, Y_test = X[train_num:train_num + 100] / 255, Y[train_num:train_num + 100]
     return X_train.T, Y_train.reshape(1, -1), X_test.T, Y_test.reshape(1, -1)
