@@ -7,6 +7,9 @@ class BaseOptimizer:
     def __init__(self, learning_rate):
         self.learning_rate = learning_rate
 
+    def init_shape(self, n_features, n_hidden):
+        pass
+
     def update_w(self, delta):
         pass
 
@@ -27,7 +30,9 @@ class Momentum(BaseOptimizer):
     def __init__(self, learning_rate=0.1, gamma=0.8):
         super(Momentum, self).__init__(learning_rate)
         self.gamma = gamma
-        self.v = np.array([0, 0])
+
+    def init_shape(self, n_features, n_hidden):
+        self.v = np.zeros((n_hidden, n_features + 1))
 
     def update_w(self, delta):
         self.v = self.gamma * self.v + self.learning_rate * delta
@@ -37,10 +42,12 @@ class Momentum(BaseOptimizer):
 class AdaGrad(BaseOptimizer):
     """AdaGrad: learning_rate can be large at start, and it will decay."""
 
-    def __init__(self, learning_rate=5, epsilon=1e-8):
+    def __init__(self, learning_rate=0.1, epsilon=1e-8):
         super(AdaGrad, self).__init__(learning_rate)
         self.epsilon = epsilon
-        self.accumulate = np.array([0.0, 0.0])
+
+    def init_shape(self, n_features, n_hidden):
+        self.accumulate = np.zeros((n_hidden, n_features + 1))
 
     def update_w(self, delta):
         self.accumulate += delta ** 2
@@ -50,14 +57,16 @@ class AdaGrad(BaseOptimizer):
 class Adam(BaseOptimizer):
     """Adam"""
 
-    def __init__(self, learning_rate=5, epsilon=1e-8, beta1=0.9, beta2=0.999):
+    def __init__(self, learning_rate=0.1, epsilon=1e-8, beta1=0.9, beta2=0.999):
         super(Adam, self).__init__(learning_rate)
         self.epsilon = epsilon
         self.beta1 = beta1
         self.beta2 = beta2
-        self.m = np.array([0.0, 0.0])
-        self.v = np.array([0.0, 0.0])
         self.t = 0
+
+    def init_shape(self, n_features, n_hidden):
+        self.m = np.zeros((n_hidden, n_features + 1))
+        self.v = np.zeros((n_hidden, n_features + 1))
 
     def update_w(self, delta):
         self.t += 1

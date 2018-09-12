@@ -28,9 +28,10 @@ class MSE(LOSS_FUNC):
 class CROSS_ENTROPY(LOSS_FUNC):
 
     def loss_value(self, y_true, y_predict):
-        size = len(y_true)
-        return -1 * sum(np.multiply(y_true, np.log(y_predict))
-                        + np.multiply(1 - y_true, np.log(1 - y_predict))) / size
+        size = y_true.shape[1]
+        cost = -1 * np.sum(np.multiply(y_true, np.log(y_predict))
+                           + np.multiply(1 - y_true, np.log(1 - y_predict))) / size
+        return np.squeeze(cost)
 
     def derivative(self, y_true, y_predict):
-        return -1 * (np.divide(y_true, y_predict) - np.divide(1 - y_true, 1 - y_predict))
+        return np.divide(1 - y_true, 1 - y_predict) - np.divide(y_true, y_predict)

@@ -1,13 +1,14 @@
 # encoding=utf8
 import numpy as np
 from numpy import random
+from math import floor
 from nn_util import *
 
 
 class Layer:
     '''y_predict = a * x + b'''
 
-    good_enough_loss = 0.01
+    good_enough_loss = 0.045
 
     def __init__(self, n_features, n_hidden, activation=None):
         self.n_features = n_features
@@ -62,32 +63,32 @@ class Layer:
 
     def compile(self, loss_func, optimizer):
         self.loss_func = loss_func
+        optimizer.init_shape(self.n_features, self.n_hidden)
         self.optimizer = optimizer
         return self
 
     def update_params(self, dW, db):
-        update_w = self.optimizer.update_w(np.vstack([dW, db]))
-        self.w -= update_w[:-1]
-        self.b -= update_w[-1].reshape(-1, 1)
+        update_w = self.optimizer.update_w(np.hstack([dW, db]))
+        self.w -= update_w[:, :-1]
+        self.b -= update_w[:, -1].reshape(-1, 1)
 
     def loss_value(self, x, y):
         A, Z, A_prev = self.forward(x)
-        return self.loss_func.loss_value(y, A)
+        loss = self.loss_func.loss_value(y, A)
+        self.losses.append(loss)
+        return loss
 
-    def fit(self, dataset, epoch, batch_size=8):
-        x, y = dataset.fetch()
-        x = x.reshape(self.n_features, -1)
-        y = y.reshape(self.n_hidden, -1)
-        steps_in_a_epoch = int(x.shape[1] / batch_size)
+    def fit(self, x, y, epoch, batch_size):
+        steps_in_a_epoch = floor(x.shape[1] / batch_size)
         for step in range(epoch):
+            if self.loss_value(x, y) < self.good_enough_loss:
+                break
             for i in range(steps_in_a_epoch):
-                x_batch, y_batch = x, y
+                start = i * batch_size
+                end = start + batch_size
+                x_batch, y_batch = x[:, start:end], y[:, start:end]
                 A, Z, A_prev = self.forward(x_batch)
                 dA = self.loss_func.derivative(y_batch, A)
                 dA_prev, dW, db = self.backward(dA, Z, A_prev)
                 self.update_params(dW, db)
-            loss = self.loss_value(x, y)
-            self.losses.append(loss)
-            if loss < self.good_enough_loss:
-                break
         return self

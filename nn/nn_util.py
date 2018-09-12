@@ -2,11 +2,6 @@
 import numpy as np
 
 
-def batch_data(x, y, batch_size):
-    shuffle_index = np.random.permutation(batch_size)
-    return x[:shuffle_index], y[shuffle_index]
-
-
 def _sigmoid(z):
     return 1 / (1 + np.exp(-z))
 

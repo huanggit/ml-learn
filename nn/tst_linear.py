@@ -21,10 +21,10 @@ def init_plot():
     fig.suptitle('Optimizers', fontsize=15)
 
 
-def plot_model(data, model, inx):
+def plot_model(x, y, model, inx):
     def plot_data_and_model():
         plot.subplot(2, 4, inx + 1)
-        plot.scatter(data.x, data.y)
+        plot.scatter(np.squeeze(x), np.squeeze(y))
         x_, y_ = model_sampling(model)
         plot.plot(x_, y_, color='green')
         plot.title(model.optimizer.__class__.__name__)
@@ -38,13 +38,12 @@ def plot_model(data, model, inx):
 
 if __name__ == '__main__':
     init_plot()
-    dataset = linear_dataset()
-    for inx, optimizer in enumerate([SGD()]):
-        # for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
+    x, y = linear_dataset()
+    for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
         model = Layer(1, 1) \
             .compile(loss_func=MSE(), optimizer=optimizer) \
-            .fit(dataset, epoch=100)
-        plot_model(dataset, model, inx)
+            .fit(x, y, epoch=100, batch_size=8)
+        plot_model(x, y, model, inx)
     plot.show()
 
 
