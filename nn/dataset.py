@@ -21,6 +21,15 @@ def linear_dataset():
     return x, y
 
 
+def two_class_dataset():
+    x = [10, 15, 37,   28, 70, 76, 88, 100]
+    y = np.array([1,  1,   1,   1,   0,   0,   0,   0])
+    x = norm_array(np.array(x))
+    x = x.reshape(1, -1)
+    y = y.reshape(1, -1)
+    return x, y
+
+
 def mnist_dataset(train_num):
     mnist = fetch_mldata('MNIST original')
     X, Y = shuffle(mnist["data"], mnist["target"], random_state=0)

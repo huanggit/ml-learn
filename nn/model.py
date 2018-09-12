@@ -8,7 +8,7 @@ from nn_util import *
 class Layer:
     '''y_predict = a * x + b'''
 
-    good_enough_loss = 0.045
+    good_enough_loss = 0.001
 
     def __init__(self, n_features, n_hidden, activation=None):
         self.n_features = n_features
@@ -18,7 +18,7 @@ class Layer:
         self.activation = activation
 
     def weight_init(self, n_features, n_hidden):
-        self.w = random.randn(n_hidden, n_features) * 0.01
+        self.w = random.RandomState(0).randn(n_hidden, n_features) * 0.01
         self.b = np.zeros((n_hidden, 1))
 
     def linear_forward(self, A_prev):
@@ -87,8 +87,8 @@ class Layer:
                 start = i * batch_size
                 end = start + batch_size
                 x_batch, y_batch = x[:, start:end], y[:, start:end]
-                A, Z, A_prev = self.forward(x_batch)
-                dA = self.loss_func.derivative(y_batch, A)
+                A, Z, A_prev = self.forward(x_batch.copy())
+                dA = self.loss_func.derivative(y_batch.copy(), A)
                 dA_prev, dW, db = self.backward(dA, Z, A_prev)
                 self.update_params(dW, db)
         return self

@@ -34,4 +34,6 @@ class CROSS_ENTROPY(LOSS_FUNC):
         return np.squeeze(cost)
 
     def derivative(self, y_true, y_predict):
-        return np.divide(1 - y_true, 1 - y_predict) - np.divide(y_true, y_predict)
+        a = np.divide(1 - y_true, 1 - np.maximum(y_predict, 0.999999))
+        b = np.divide(y_true, np.minimum(y_predict, 0.000001))
+        return a - b
