@@ -1,19 +1,15 @@
 # encoding=utf8
 import numpy as np
 from numpy import random
-from math import floor
 from nn_util import *
 
 
 class Layer:
     '''y_predict = a * x + b'''
 
-    good_enough_loss = 0.001
-
     def __init__(self, n_features, n_hidden, activation=None):
         self.n_features = n_features
         self.n_hidden = n_hidden
-        self.losses = list()
         self.weight_init(n_features, n_hidden)
         self.activation = activation
 
@@ -61,34 +57,10 @@ class Layer:
         dA_prev, dW, db = self.linear_backward(dZ, A_prev)
         return dA_prev, dW, db
 
-    def compile(self, loss_func, optimizer):
-        self.loss_func = loss_func
-        optimizer.init_shape(self.n_features, self.n_hidden)
+    def compile(self, optimizer):
         self.optimizer = optimizer
-        return self
 
     def update_params(self, dW, db):
         update_w = self.optimizer.update_w(np.hstack([dW, db]))
         self.w -= update_w[:, :-1]
         self.b -= update_w[:, -1].reshape(-1, 1)
-
-    def loss_value(self, x, y):
-        A, Z, A_prev = self.forward(x)
-        loss = self.loss_func.loss_value(y, A)
-        self.losses.append(loss)
-        return loss
-
-    def fit(self, x, y, epoch, batch_size):
-        steps_in_a_epoch = floor(x.shape[1] / batch_size)
-        for step in range(epoch):
-            if self.loss_value(x, y) < self.good_enough_loss:
-                break
-            for i in range(steps_in_a_epoch):
-                start = i * batch_size
-                end = start + batch_size
-                x_batch, y_batch = x[:, start:end], y[:, start:end]
-                A, Z, A_prev = self.forward(x_batch.copy())
-                dA = self.loss_func.derivative(y_batch.copy(), A)
-                dA_prev, dW, db = self.backward(dA, Z, A_prev)
-                self.update_params(dW, db)
-        return self

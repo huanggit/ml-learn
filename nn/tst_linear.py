@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plot
 from dataset import linear_dataset
-from model import Layer
+from models import LinearModel
 from optimizer import *
 from loss import *
 
@@ -10,7 +10,7 @@ from loss import *
 def model_sampling(model, start=0, end=1.1, interval=0.1):
     'to plot the model fit line, we need to sample some points in model'
     x_ = np.arange(start, end, interval)
-    y_, Z, A_prev = model.forward(x_.reshape(1, -1))
+    y_, Z, A_prev = model.layer.forward(x_.reshape(1, -1))
     return x_, np.squeeze(y_)
 
 
@@ -27,7 +27,7 @@ def plot_model(x, y, model, inx):
         plot.scatter(np.squeeze(x), np.squeeze(y))
         x_, y_ = model_sampling(model)
         plot.plot(x_, y_, color='green')
-        plot.title(model.optimizer.__class__.__name__)
+        plot.title(model.layer.optimizer.__class__.__name__)
 
     def plot_losses():
         plot.subplot(2, 4, inx + 5)
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     init_plot()
     x, y = linear_dataset()
     for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
-        model = Layer(1, 1) \
+        model = LinearModel(1) \
             .compile(loss_func=MSE(), optimizer=optimizer) \
             .fit(x, y, epoch=100, batch_size=8)
         plot_model(x, y, model, inx)

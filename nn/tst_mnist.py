@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plot
 from dataset import mnist_dataset, two_class_dataset
-from model import Layer
+from models import LinearModel
 import matplotlib.pyplot as plt
 from optimizer import *
 from loss import *
@@ -30,7 +30,7 @@ def mnist():
 
 def two_class():
     X_train, Y_train = two_class_dataset()
-    model = Layer(X_train.shape[0], 1, activation='sigmoid') \
+    model = LinearModel(X_train.shape[0], activation='sigmoid') \
         .compile(loss_func=CROSS_ENTROPY(), optimizer=Adam()) \
         .fit(X_train, Y_train, epoch=200, batch_size=8)
     plt.plot(range(len(model.losses)), model.losses, color='orange')
