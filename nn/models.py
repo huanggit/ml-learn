@@ -18,13 +18,18 @@ class Model:
         return self
 
     def init_optimizers_for_layers(self, optimizer):
-        pass
+        raise Exception('abstract method should be implemented')
+
+    def predict(self, x):
+        raise Exception('abstract method should be implemented')
 
     def loss_value(self, x, y):
-        pass
+        loss = self.loss_func.loss_value(y, self.predict(x))
+        self.losses.append(loss)
+        return loss
 
     def fit(self, x, y, epoch, batch_size):
-        pass
+        raise Exception('abstract method should be implemented')
 
 
 class LinearModel(Model):
@@ -36,15 +41,14 @@ class LinearModel(Model):
         self.layer = Layer(n_features, 1, activation)
 
     def init_optimizers_for_layers(self, optz):
+        self.optimizer_name = optz.__class__.__name__
         optimizer = deepcopy(optz)
         optimizer.init_shape(self.n_features, 1)
         self.layer.compile(optimizer)
 
-    def loss_value(self, x, y):
+    def predict(self, x):
         A, Z, A_prev = self.layer.forward(x)
-        loss = self.loss_func.loss_value(y, A)
-        self.losses.append(loss)
-        return loss
+        return A
 
     def fit(self, x, y, epoch, batch_size):
         steps_in_a_epoch = floor(x.shape[1] / batch_size)
