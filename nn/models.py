@@ -7,7 +7,7 @@ from math import floor
 
 class Model:
 
-    good_enough_loss = 0.001
+    good_enough_loss = 0.045
 
     def __init__(self):
         self.losses = list()
@@ -31,7 +31,7 @@ class LinearModel(Model):
     """docstring for ClassName"""
 
     def __init__(self, n_features, activation=None):
-        super(LinearModel, self).__init__()
+        Model.__init__(self)
         self.n_features = n_features
         self.layer = Layer(n_features, 1, activation)
 
