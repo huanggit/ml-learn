@@ -27,7 +27,7 @@ def plot_model(x, y, model, inx):
         plot.scatter(np.squeeze(x), np.squeeze(y))
         x_, y_ = model_sampling(model)
         plot.plot(x_, y_, color='green')
-        plot.title(model.optimizer_name)
+        plot.title(model.layer.optimizer.__class__.__name__)
 
     def plot_losses():
         plot.subplot(2, 4, inx + 5)

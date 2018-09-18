@@ -3,6 +3,7 @@ import numpy as np
 from layer import Layer
 from math import floor
 import matplotlib.pyplot as plt
+from activation import *
 
 
 class Model:
@@ -78,12 +79,11 @@ class Model:
 class LinearModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_features, activation=None, good_enough_loss=0.045):
+    def __init__(self, n_features, activation=Tanh(), good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
         self.layer = Layer(n_features, 1, activation)
 
     def init_optimizers_for_layers(self, optimizer):
-        self.optimizer_name = optimizer.__class__.__name__
         self.layer.compile(optimizer)
 
     def predict(self, x):
@@ -100,15 +100,17 @@ class LinearModel(Model):
 class MultiLayerModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_nodes, activation=None, good_enough_loss=0.045):
+    def __init__(self, n_nodes,
+                 activation=Tanh(),
+                 initialization="he",
+                 good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
         self.layers = list()
         for i in range(len(n_nodes) - 2):
-            self.layers.append(Layer(n_nodes[i], n_nodes[i + 1], activation))
-        self.layers.append(Layer(n_nodes[-2], n_nodes[-1], 'sigmoid'))
+            self.layers.append(Layer(n_nodes[i], n_nodes[i + 1], activation, initialization))
+        self.layers.append(Layer(n_nodes[-2], n_nodes[-1], Sigmoid(), initialization))
 
     def init_optimizers_for_layers(self, optimizer):
-        self.optimizer_name = optimizer.__class__.__name__
         for layer in self.layers:
             layer.compile(optimizer)
 

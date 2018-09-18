@@ -2,20 +2,23 @@
 import numpy as np
 from numpy import random
 from copy import deepcopy
-from nn_util import *
+from activation import *
 
 
 class Layer:
     '''y_predict = a * x + b'''
 
-    def __init__(self, n_features, n_hidden, activation=None):
+    def __init__(self, n_features, n_hidden, activation=NoneAct(), initialization="he"):
         self.n_features = n_features
         self.n_hidden = n_hidden
-        self.weight_init(n_features, n_hidden)
+        self.weight_init(n_features, n_hidden, initialization)
         self.activation = activation
 
-    def weight_init(self, n_features, n_hidden):
-        self.w = random.RandomState(0).randn(n_hidden, n_features) * 0.01
+    def weight_init(self, n_features, n_hidden, initialization="he"):
+        if initialization == "he":
+            self.w = random.RandomState(0).randn(n_hidden, n_features) / np.sqrt(n_features / 2)
+        elif initialization == "random":
+            self.w = random.RandomState(0).randn(n_hidden, n_features) * 0.1
         self.b = np.zeros((n_hidden, 1))
 
     def linear_forward(self, A_prev):
@@ -29,7 +32,7 @@ class Layer:
         '''
         assert (A_prev.shape[0] == self.n_features)
         Z = self.linear_forward(A_prev)
-        A = activate(self.activation, Z)
+        A = self.activation.activate(Z)
         # A.shape == (n_hidden, n_batch_size)
         assert (A.shape == (self.w.shape[0], A_prev.shape[1]))
         self.Z = Z
@@ -56,7 +59,7 @@ class Layer:
         return dA_prev, dW, db
 
     def backward(self, dA):
-        dZ = activate_derivative(self.activation, self.Z) * dA
+        dZ = self.activation.derivative(self.Z) * dA
         dA_prev, dW, db = self.linear_backward(dZ, self.A_prev)
         return dA_prev, dW, db
 
