@@ -7,11 +7,9 @@ def _sigmoid(z):
 
 
 def _tanh(z):
-    '''
-    g(z)  = (e^z - e^-z) / (e^z + e^-z)
-    g'(z) = 1 - np.tanh(z)^2 = 1 - g(z)^2
-    '''
-    pass
+    ez = np.exp(z)
+    e_z = np.exp(-z)
+    return np.divide(ez - e_z, ez + e_z)
 
 
 def _relu(z):
@@ -29,6 +27,8 @@ def activate(activation, Z):
         return _sigmoid(Z)
     if activation == 'relu':
         return _relu(Z)
+    if activation == 'tanh':
+        return np.tanh(Z)
     else:
         raise Exception('invalid activation')
 
@@ -45,6 +45,10 @@ def _relu_derivative(Z):
     return dZ
 
 
+def _tanh_derivative(Z):
+    return 1 - np.tanh(Z) ** 2
+
+
 def activate_derivative(activation, Z):
     if activation is None:
         return 1
@@ -52,3 +56,7 @@ def activate_derivative(activation, Z):
         return _relu_derivative(Z)
     if activation == "sigmoid":
         return _sigmoid_derivative(Z)
+    if activation == "tanh":
+        return _tanh_derivative(Z)
+    else:
+        raise Exception('invalid activation')

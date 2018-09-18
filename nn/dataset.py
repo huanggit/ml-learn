@@ -1,6 +1,6 @@
 # encoding=utf8
 import numpy as np
-from sklearn.datasets import fetch_mldata
+from sklearn.datasets import fetch_mldata, make_moons
 from sklearn.utils import shuffle
 
 
@@ -21,13 +21,9 @@ def linear_dataset():
     return x, y
 
 
-def two_class_dataset():
-    x = [10, 15, 37,   28, 70, 76, 88, 100]
-    y = np.array([1,  1,   1,   1,   0,   0,   0,   0])
-    x = norm_array(np.array(x))
-    x = x.reshape(1, -1)
-    y = y.reshape(1, -1)
-    return x, y
+def moons_dataset():
+    x, y = make_moons(256, noise=0.20)
+    return x.T, y.reshape(1, -1)
 
 
 def mnist_dataset(train_num):

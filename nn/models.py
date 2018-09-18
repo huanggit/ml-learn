@@ -2,14 +2,14 @@
 import numpy as np
 from layer import Layer
 from math import floor
+import matplotlib.pyplot as plt
 
 
 class Model:
 
-    good_enough_loss = 0.045
-
-    def __init__(self):
+    def __init__(self, good_enough_loss=0.01):
         self.losses = list()
+        self.good_enough_loss = good_enough_loss
 
     def compile(self, loss_func, optimizer):
         self.loss_func = loss_func
@@ -42,12 +42,44 @@ class Model:
     def step(self, x_batch, y_batch):
         raise Exception('abstract method should be implemented')
 
+    def classify_y(self, x):
+        Yp = self.predict(x)
+        Y_predict = np.zeros(Yp.shape)
+        Y_predict[Yp > 0.5] = 1
+        return Y_predict
+
+    def plot_decision_boundary(self, x, y):
+        x_min, x_max = x[0].min() - .5, x[0].max() + .5
+        y_min, y_max = x[1].min() - .5, x[1].max() + .5
+        h = 0.01
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+        Z = self.classify_y(np.array([xx.ravel(), yy.ravel()])).reshape(xx.shape)
+        plt.contourf(xx, yy, Z, cmap=plt.cm.Spectral)
+        plt.scatter(x[0].ravel(), x[1].ravel(), c=y.ravel(), cmap=plt.cm.Spectral)
+        return self
+
+    def plot_loss(self):
+        plt.plot(range(len(self.losses)), self.losses, color='orange')
+        return self
+
+    def plot(self, x, y):
+        fig = plt.figure(1, figsize=(9, 4))
+        fig.suptitle('Model Info', fontsize=15)
+        plt.subplot(1, 2, 1)
+        self.plot_loss()
+        plt.subplot(1, 2, 2)
+        self.plot_decision_boundary(x, y)
+        return self
+
+    def show(self):
+        plt.show()
+
 
 class LinearModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_features, activation=None):
-        Model.__init__(self)
+    def __init__(self, n_features, activation=None, good_enough_loss=0.01):
+        Model.__init__(self, good_enough_loss)
         self.layer = Layer(n_features, 1, activation)
 
     def init_optimizers_for_layers(self, optimizer):
@@ -68,12 +100,12 @@ class LinearModel(Model):
 class MultiLayerModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_nodes, activation=None):
-        Model.__init__(self)
+    def __init__(self, n_nodes, activation=None, good_enough_loss=0.01):
+        Model.__init__(self, good_enough_loss)
         self.layers = list()
-        for i in range(len(n_nodes) - 1):
+        for i in range(len(n_nodes) - 2):
             self.layers.append(Layer(n_nodes[i], n_nodes[i + 1], activation))
-        self.layers.append(Layer(n_nodes[-1], 1, 'sigmoid'))
+        self.layers.append(Layer(n_nodes[-2], n_nodes[-1], 'sigmoid'))
 
     def init_optimizers_for_layers(self, optimizer):
         self.optimizer_name = optimizer.__class__.__name__
