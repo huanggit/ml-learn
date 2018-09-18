@@ -8,11 +8,17 @@ from activation import *
 class Layer:
     '''y_predict = a * x + b'''
 
-    def __init__(self, n_features, n_hidden, activation=NoneAct(), initialization="he"):
+    def __init__(self,
+                 n_features,
+                 n_hidden,
+                 activation=NoneAct(),
+                 keep_prob=None,
+                 initialization="he"):
         self.n_features = n_features
         self.n_hidden = n_hidden
         self.weight_init(n_features, n_hidden, initialization)
         self.activation = activation
+        self.keep_prob = keep_prob
 
     def weight_init(self, n_features, n_hidden, initialization="he"):
         if initialization == "he":
@@ -20,6 +26,12 @@ class Layer:
         elif initialization == "random":
             self.w = random.RandomState(0).randn(n_hidden, n_features) * 0.1
         self.b = np.zeros((n_hidden, 1))
+
+    def dropout_init(self, A):
+        return (random.rand(A.shape[0], A.shape[1]) < self.keep_prob)
+
+    def dropout(self, A):
+        return (A * self.dropout_mat) / self.keep_prob
 
     def linear_forward(self, A_prev):
         Z = np.dot(self.w, A_prev) + self.b
@@ -37,6 +49,9 @@ class Layer:
         assert (A.shape == (self.w.shape[0], A_prev.shape[1]))
         self.Z = Z
         self.A_prev = A_prev
+        if self.keep_prob is not None:
+            self.dropout_mat = self.dropout_init(A)
+            A = self.dropout(A)
         return A
 
     def linear_backward(self, dZ, A_prev):
@@ -59,8 +74,11 @@ class Layer:
         return dA_prev, dW, db
 
     def backward(self, dA):
+        if self.keep_prob is not None:
+            dA = self.dropout(dA)
         dZ = self.activation.derivative(self.Z) * dA
         dA_prev, dW, db = self.linear_backward(dZ, self.A_prev)
+
         return dA_prev, dW, db
 
     def compile(self, optimizer):

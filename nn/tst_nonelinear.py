@@ -46,7 +46,8 @@ def moons_inits():
     fig.suptitle('Losses', fontsize=15)
     X_train, Y_train = moons_dataset()
     for inx, initz in enumerate(['he', 'random']):
-        model = MultiLayerModel([X_train.shape[0], 10, 5, 1], initialization=initz) \
+        model = MultiLayerModel([X_train.shape[0], 10, 5, 1], activation=Relu(),
+                                initialization=initz) \
             .compile(loss_func=CROSS_ENTROPY(), optimizer=Adam(0.1)) \
             .fit(X_train, Y_train, epoch=400, batch_size=256)
         plt.subplot(2, 2, 1 + 2 * inx)
@@ -73,8 +74,26 @@ def moons_activations():
     plt.show()
 
 
+def moons_dropout():
+    fig = plt.figure(1, figsize=(8, 6))
+    fig.suptitle('Dropout', fontsize=15)
+    X_train, Y_train = moons_dataset(0.25)
+    for inx, dropout in enumerate([None, 0.8]):
+        model = MultiLayerModel([X_train.shape[0], 10, 8, 5, 1],
+                                keep_prob=dropout,
+                                good_enough_loss=0.01) \
+            .compile(loss_func=CROSS_ENTROPY(), optimizer=Adam(0.02)) \
+            .fit(X_train, Y_train, epoch=1000, batch_size=256)
+        plt.subplot(2, 2, 1 + 2 * inx)
+        plt.ylabel(dropout)
+        model.plot_loss()
+        plt.subplot(2, 2, 2 + 2 * inx)
+        model.plot_decision_boundary(X_train, Y_train)
+    plt.show()
+
+
 if __name__ == '__main__':
-    moons_activations()
+    moons_dropout()
 
 
 '''

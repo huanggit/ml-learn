@@ -65,7 +65,7 @@ class Model:
 
     def plot(self, x, y):
         fig = plt.figure(1, figsize=(9, 4))
-        fig.suptitle('Model Info', fontsize=15)
+        fig.suptitle('final loss: {:.6f}'.format(self.losses[-1]), fontsize=15)
         plt.subplot(1, 2, 1)
         self.plot_loss()
         plt.subplot(1, 2, 2)
@@ -79,9 +79,12 @@ class Model:
 class LinearModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_features, activation=Tanh(), good_enough_loss=0.045):
+    def __init__(self,
+                 n_features,
+                 activation=Tanh(),
+                 good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
-        self.layer = Layer(n_features, 1, activation)
+        self.layer = Layer(n_features, 1, activation=activation)
 
     def init_optimizers_for_layers(self, optimizer):
         self.layer.compile(optimizer)
@@ -103,12 +106,18 @@ class MultiLayerModel(Model):
     def __init__(self, n_nodes,
                  activation=Tanh(),
                  initialization="he",
+                 keep_prob=None,
                  good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
         self.layers = list()
         for i in range(len(n_nodes) - 2):
-            self.layers.append(Layer(n_nodes[i], n_nodes[i + 1], activation, initialization))
-        self.layers.append(Layer(n_nodes[-2], n_nodes[-1], Sigmoid(), initialization))
+            self.layers.append(Layer(n_nodes[i], n_nodes[i + 1],
+                                     activation=activation,
+                                     keep_prob=keep_prob,
+                                     initialization=initialization))
+        self.layers.append(Layer(n_nodes[-2], n_nodes[-1],
+                                 activation=Sigmoid(),
+                                 initialization=initialization))
 
     def init_optimizers_for_layers(self, optimizer):
         for layer in self.layers:

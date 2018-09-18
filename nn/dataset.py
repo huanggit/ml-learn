@@ -21,8 +21,8 @@ def linear_dataset():
     return x, y
 
 
-def moons_dataset():
-    x, y = make_moons(256, noise=0.18)
+def moons_dataset(noise=0.18):
+    x, y = make_moons(256, noise=noise)
     return x.T, y.reshape(1, -1)
 
 
