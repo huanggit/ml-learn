@@ -11,10 +11,10 @@ from loss import *
 def two_class_none_linear():
     fig = plt.figure(1, figsize=(8, 8))
     X_train, Y_train = moons_dataset()
-    for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
+    for inx, optimizer in enumerate([SGD(0.8), Momentum(0.3), AdaGrad(0.3), Adam(0.1)]):
         model = MultiLayerModel([X_train.shape[0], 10, 5, 1], activation='tanh') \
             .compile(loss_func=CROSS_ENTROPY(), optimizer=optimizer) \
-            .fit(X_train, Y_train, epoch=1000, batch_size=256)
+            .fit(X_train, Y_train, epoch=3000, batch_size=256)
         plt.subplot(4, 2, 1 + 2 * inx)
         model.plot_loss()
         plt.subplot(4, 2, 2 + 2 * inx)

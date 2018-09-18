@@ -22,7 +22,7 @@ def linear_dataset():
 
 
 def moons_dataset():
-    x, y = make_moons(256, noise=0.20)
+    x, y = make_moons(256, noise=0.18)
     return x.T, y.reshape(1, -1)
 
 

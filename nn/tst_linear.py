@@ -40,7 +40,7 @@ if __name__ == '__main__':
     init_plot()
     x, y = linear_dataset()
     for inx, optimizer in enumerate([SGD(), Momentum(), AdaGrad(), Adam()]):
-        model = LinearModel(n_features=1, good_enough_loss=0.045) \
+        model = LinearModel(n_features=1) \
             .compile(loss_func=MSE(), optimizer=optimizer) \
             .fit(x, y, epoch=100, batch_size=8)
         plot_model(x, y, model, inx)

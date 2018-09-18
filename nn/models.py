@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 class Model:
 
-    def __init__(self, good_enough_loss=0.01):
+    def __init__(self, good_enough_loss=0.045):
         self.losses = list()
         self.good_enough_loss = good_enough_loss
 
@@ -78,7 +78,7 @@ class Model:
 class LinearModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_features, activation=None, good_enough_loss=0.01):
+    def __init__(self, n_features, activation=None, good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
         self.layer = Layer(n_features, 1, activation)
 
@@ -100,7 +100,7 @@ class LinearModel(Model):
 class MultiLayerModel(Model):
     """docstring for ClassName"""
 
-    def __init__(self, n_nodes, activation=None, good_enough_loss=0.01):
+    def __init__(self, n_nodes, activation=None, good_enough_loss=0.045):
         Model.__init__(self, good_enough_loss)
         self.layers = list()
         for i in range(len(n_nodes) - 2):
