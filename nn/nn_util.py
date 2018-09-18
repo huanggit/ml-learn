@@ -27,6 +27,8 @@ def activate(activation, Z):
         return _sigmoid(Z)
     if activation == 'relu':
         return _relu(Z)
+    if activation == 'leaky_relu':
+        return _leaky_relu(Z)
     if activation == 'tanh':
         return np.tanh(Z)
     else:
@@ -40,6 +42,12 @@ def _sigmoid_derivative(Z):
 
 
 def _relu_derivative(Z):
+    dZ = np.full(Z.shape, 0.01)
+    dZ[Z > 0] = 1
+    return dZ
+
+
+def _leaky_relu_derivative(Z):
     dZ = np.zeros(Z.shape)
     dZ[Z > 0] = 1
     return dZ
@@ -52,11 +60,13 @@ def _tanh_derivative(Z):
 def activate_derivative(activation, Z):
     if activation is None:
         return 1
-    if activation == "relu":
-        return _relu_derivative(Z)
     if activation == "sigmoid":
         return _sigmoid_derivative(Z)
     if activation == "tanh":
         return _tanh_derivative(Z)
+    if activation == "relu":
+        return _relu_derivative(Z)
+    if activation == 'leaky_relu':
+        return _relu_derivative(Z)
     else:
         raise Exception('invalid activation')
