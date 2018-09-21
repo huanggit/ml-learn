@@ -45,13 +45,16 @@ class AdaGrad(BaseOptimizer):
     def __init__(self, learning_rate=0.1, epsilon=1e-8):
         BaseOptimizer.__init__(self, learning_rate)
         self.epsilon = epsilon
+        self.t = 0
 
     def init_shape(self, n_features, n_hidden):
         self.accumulate = np.zeros((n_hidden, n_features + 1))
 
     def update_w(self, delta):
+        self.t += 1
         self.accumulate += delta ** 2
-        return delta * self.learning_rate / np.sqrt(self.accumulate + self.epsilon)
+        va = self.accumulate / (1 - 0.9**self.t)
+        return delta * self.learning_rate / np.sqrt(va + self.epsilon)
 
 
 class Adam(BaseOptimizer):

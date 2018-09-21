@@ -46,7 +46,7 @@ class Layer:
         Z = self.linear_forward(A_prev)
         A = self.activation.activate(Z)
         # A.shape == (n_hidden, n_batch_size)
-        assert (A.shape == (self.w.shape[0], A_prev.shape[1]))
+        # assert (A.shape == (self.w.shape[0], A_prev.shape[1]))
         self.Z = Z
         self.A_prev = A_prev
         if self.keep_prob is not None:
@@ -78,7 +78,6 @@ class Layer:
             dA = self.dropout(dA)
         dZ = self.activation.derivative(self.Z) * dA
         dA_prev, dW, db = self.linear_backward(dZ, self.A_prev)
-
         return dA_prev, dW, db
 
     def compile(self, optimizer):
